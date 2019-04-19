@@ -1,24 +1,30 @@
-var express = require('express');
-var bodyParser = require('body-parser');
-var logger = require('morgan');
-var methodOverride = require('method-override')
+require('dotenv').config();
+const express = require('express');
+const bodyParser = require('body-parser');
+const logger = require('morgan');
+const methodOverride = require('method-override')
 //const cors = require('cors')(cors_options);
-var nodemailer=require('nodemailer')
-var mongoose= require('mongoose')
-var passport = require('passport');
-var port= process.env.PORT ||3000;
-var databaseConfig = require('./app/config/database');
-var router = require('./app/routes');
-var app = express();
+const nodemailer=require('nodemailer')
+const mongoose= require('mongoose')
+const passport = require('passport');
+const port= process.env.PORT ||3000;
+const databaseConfig = require('./app/config/database');
+//const router = require('./app/routes');
+const router = require("./app/routes");
+const app = express();
 
-// parse application/x-www-form-urlencoded
+
 (async ()=>{
-    app.use(passport.initialize());
+    console.log(process.env.TIMES)
 
+    //@ts-ignore
+    app.use(passport.initialize());
+    // parse application/x-www-form-urlencoded
     app.use(bodyParser.urlencoded({
         limit: '50mb',
         extended: true
     }))
+
     // parse application/json
     app.use(bodyParser.json({limit: '50mb'}))
     app.use((req,res,next)=>{
@@ -33,16 +39,17 @@ var app = express();
         //console.log("connection",conn.connection.db)
     }) */
     mongoose.connect(databaseConfig.url,{ useNewUrlParser: true });
-    var db= mongoose.connection
+    //@ts-ignore
+    const db= mongoose.connection
     //db.dropCollection('orders')
     db.on('error',console.error.bind(console,'connection error'))
     db.once('open',(()=>{
         console.log("connected to db")
     }))
     router(app);
-    var server = app.listen(port,(()=>{
-        var host = server.address().address
-       var port = server.address().port
+    const server = app.listen(port,(()=>{
+        const host = server.address().address
+       const port = server.address().port
        
        console.log("Example app listening at http://%s:%s", host, port)
     }));
